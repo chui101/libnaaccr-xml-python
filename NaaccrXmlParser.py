@@ -1,11 +1,15 @@
 from xml.etree import ElementTree
+from filters import VisFilter
+from output import ConsoleOutput
 import time
-import json
+
 
 class NaaccrXmlParser:
 
-    def __init__(self,xml):
+    def __init__(self, xml, filter, output):
         self.xml = xml
+        self.filter = filter
+        self.output = output
 
     def expandtag(self,tag):
         return '{http://naaccr.org/naaccrxml}' + tag
@@ -16,34 +20,15 @@ class NaaccrXmlParser:
             if event == "end":
                 if elem.tag == self.expandtag("Patient"):
                     count += 1
-                    self.parsepatient(elem)
+                    result = self.filter.filter(elem)
+                    self.output.output(result)
                     elem.clear()
-
-    def parsepatient(self,elem):
-        record = {}
-        for patientitem in list(elem):
-            if patientitem.tag == self.expandtag('Item'):
-                key = patientitem.get('naaccrId')
-                value = patientitem.text
-                record[key] = value
-            if patientitem.tag == self.expandtag('Tumor'):
-                if not record.has_key('tumors'):
-                    record['tumors'] = []
-                record['tumors'].append(self.parsetumor(patientitem))
-        print (json.dumps(record,indent=True))
-        return record
-
-    def parsetumor(self,elem):
-        tumorrecord = {}
-        for tumoritem in list(elem):
-            if tumoritem.tag == self.expandtag('Item'):
-                key = tumoritem.get('naaccrId')
-                value = tumoritem.text
-                tumorrecord[key] = value
-        return tumorrecord
 
 if __name__ == "__main__":
     start = time.time()
-    parser = NaaccrXmlParser("test.xml")
+    filter = VisFilter.VisFilter()
+    output = ConsoleOutput.ConsoleOuptut()
+    parser = NaaccrXmlParser("test.xml",filter,output)
     parser.parse()
     print(time.time() - start)
+
