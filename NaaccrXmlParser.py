@@ -1,6 +1,6 @@
 from xml.etree import ElementTree
 from filters import VisFilter
-from output import ConsoleOutput
+from output import MongoOutput
 import time
 
 
@@ -20,14 +20,15 @@ class NaaccrXmlParser:
             if event == "end":
                 if elem.tag == self.expandtag("Patient"):
                     count += 1
-                    result = self.filter.filter(elem)
-                    self.output.output(result)
+                    results = self.filter.filter(elem)
+                    for result in results:
+                        self.output.output(result)
                     elem.clear()
 
 if __name__ == "__main__":
     start = time.time()
-    filter = VisFilter.VisFilter()
-    output = ConsoleOutput.ConsoleOuptut()
+    filter = VisFilter()
+    output = MongoOutput()
     parser = NaaccrXmlParser("test.xml",filter,output)
     parser.parse()
     print(time.time() - start)

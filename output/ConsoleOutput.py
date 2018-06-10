@@ -1,5 +1,5 @@
 import json
 
-class ConsoleOuptut:
+class ConsoleOutput:
     def output(self,record):
         print(json.dumps(record))
