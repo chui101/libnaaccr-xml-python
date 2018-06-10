@@ -5,7 +5,7 @@ class VisFilter:
     def __init__(self, items = None):
         self.initialized = True
         if items == None:
-            self.items = ["patientIdNumber","sex","ageAtDiagnosis"]
+            self.items = ["patientIdNumber","sex","primarySite"]
         else:
             self.items = items
 
@@ -40,7 +40,8 @@ class VisFilter:
                     # additional field-specific filtering
                     if re.match('^\d+$', value):
                         value = int(value)
-
+                    if key == "primarySite":
+                        value = value[0:3]
                     #commit
                     tumor_record[key] = value
             tumors.append(tumor_record)
