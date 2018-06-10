@@ -1,4 +1,4 @@
-import xml.etree.ElementTree as ET
+import re
 
 class VisFilter:
 
@@ -18,7 +18,13 @@ class VisFilter:
         patient_record = {}
         for patientitem in list(element.findall(self.expandtag("Item"))):
             if patientitem.get("naaccrId") in self.items:
-                patient_record[patientitem.get("naaccrId")] = patientitem.text
+                key = patientitem.get("naaccrId")
+                value = patientitem.text
+                # additional field-specific filtering
+                if re.match('^\d+$',value):
+                    value = int(value)
+                # commit
+                patient_record[key] = value
 
         # loop through all of the tumors
         for tumor in list(element.findall(self.expandtag("Tumor"))):
@@ -29,7 +35,14 @@ class VisFilter:
             # read tumor items from tumor element tree
             for tumoritem in list(tumor.findall(self.expandtag("Item"))):
                 if tumoritem.get("naaccrId") in self.items:
-                    tumor_record[tumoritem.get("naaccrId")] = tumoritem.text
+                    key = tumoritem.get("naaccrId")
+                    value = tumoritem.text
+                    # additional field-specific filtering
+                    if re.match('^\d+$', value):
+                        value = int(value)
+
+                    #commit
+                    tumor_record[key] = value
             tumors.append(tumor_record)
 
         return tumors

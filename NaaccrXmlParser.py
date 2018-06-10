@@ -27,7 +27,7 @@ class NaaccrXmlParser:
 
 if __name__ == "__main__":
     start = time.time()
-    filter = VisFilter()
+    filter = VisFilter(items=['sex',"patientIdNumber","vitalStatus","ageAtDiagnosis","censusTract2010","dateOfDiagnosis","primarySite","dateOfLastContact","derivedAjcc6StageGrp","derivedAjcc7StageGrp"])
     output = MongoOutput()
     parser = NaaccrXmlParser("test.xml",filter,output)
     parser.parse()
