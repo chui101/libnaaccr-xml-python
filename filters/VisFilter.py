@@ -2,9 +2,12 @@ import xml.etree.ElementTree as ET
 
 class VisFilter:
 
-    def __init__(self):
+    def __init__(self, items = None):
         self.initialized = True
-        self.dataItems = ["patientIdNumber","sex","ageAtDiagnosis"]
+        if items == None:
+            self.items = ["patientIdNumber","sex","ageAtDiagnosis"]
+        else:
+            self.items = items
 
     def expandtag(self,tag):
         return '{http://naaccr.org/naaccrxml}' + tag
@@ -14,7 +17,7 @@ class VisFilter:
         # loop through all Item tags at the patient level
         patient_record = {}
         for patientitem in list(element.findall(self.expandtag("Item"))):
-            if patientitem.get("naaccrId") in self.dataItems:
+            if patientitem.get("naaccrId") in self.items:
                 patient_record[patientitem.get("naaccrId")] = patientitem.text
 
         # loop through all of the tumors
@@ -25,7 +28,7 @@ class VisFilter:
                 tumor_record[key] = patient_record[key]
             # read tumor items from tumor element tree
             for tumoritem in list(tumor.findall(self.expandtag("Item"))):
-                if tumoritem.get("naaccrId") in self.dataItems:
+                if tumoritem.get("naaccrId") in self.items:
                     tumor_record[tumoritem.get("naaccrId")] = tumoritem.text
             tumors.append(tumor_record)
 
